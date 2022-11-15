@@ -10,7 +10,6 @@ typedef struct
 {
     bool operand_expected;
     bool operator_expected;
-    bool left_par_allowed;
     bool sign_allowed;
 
     unsigned int left_par_count;
@@ -24,7 +23,6 @@ static SyntaxCheckData init()
     SyntaxCheckData data;
     data.operand_expected = true;
     data.operator_expected = false;
-    data.left_par_allowed = true;
     data.sign_allowed = true;
 
     data.left_par_count = 0;
@@ -60,7 +58,7 @@ static bool validate_operand_expected(Token token, SyntaxCheckData *data)
 {
     if (token.type == PARENTHESIS)
     {
-        if (data->left_par_allowed && token.value.parenthesis == LEFT)
+        if (token.value.parenthesis == LEFT)
         {
             data->sign_allowed = true;
             return par_check(LEFT, data);
@@ -83,7 +81,6 @@ static bool validate_operand_expected(Token token, SyntaxCheckData *data)
         else if (isunary(token.value.operator))
         {
             data->sign_allowed = true;
-            data->left_par_allowed = true;
             return true;
         }
 
@@ -109,7 +106,6 @@ static bool validate_operator_expected(Token token, SyntaxCheckData *data)
     {
         if (token.value.parenthesis == RIGHT)
         {
-            data->left_par_allowed = false;
             return par_check(RIGHT, data);
         }
 
@@ -127,7 +123,6 @@ static bool validate_operator_expected(Token token, SyntaxCheckData *data)
 
         data->operator_expected = false;
         data->operand_expected = true;
-        data->left_par_allowed = true;
         data->sign_allowed = true;
         return true;
     }
